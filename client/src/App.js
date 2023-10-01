@@ -1,16 +1,45 @@
-import LoginPage from "./components/LoginPage";
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { Component } from 'react';
+import axios from 'axios';
 
-const App = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
+class MyComponent extends Component {
+  constructor() {
+    super();
+    this.state = {
+      apiData: null,
+      error: null,
+    };
+  }
 
-      </Routes>
-    </Router>
-  );
-};
+  componentDidMount() {
+    // Define the API URL
+    const apiUrl = '/api/core/menu/search';
 
-export default App;
+    // Make the API call
+    axios.get(apiUrl)
+      .then(response => {
+        const responseData = response.data;
+        this.setState({ apiData: responseData, error: null });
+      })
+      .catch(error => {
+        console.error('API Error:', error);
+        this.setState({ apiData: null, error: 'Internal server error' });
+      });
+  }
+
+  render() {
+    const { apiData, error } = this.state;
+
+    return (
+      <div>
+        <h1>API Response:</h1>
+        {error ? (
+          <p>Error: {error}</p>
+        ) : (
+          <pre>{JSON.stringify(apiData, null, 2)}</pre>
+        )}
+      </div>
+    );
+  }
+}
+
+export default MyComponent;
